@@ -27,8 +27,12 @@ function get_final_prediction(predictions) {
       final_probability = prediction.probability;
       final_result = prediction.className;
     }
-  });
-  return final_result;
+  })
+  if (final_probability>0.7)
+    return final_result;
+  else{
+    return ""
+  }
 }
 
 module.exports = { moderate: moderate, load_model: load_model };

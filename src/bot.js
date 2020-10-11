@@ -1,66 +1,105 @@
 // imports
 if (process.env.NODE_ENV !== "production") {
-  // - Checks if environment is profuction or development.
-  require("dotenv").config();
+	// - Checks if environment is profuction or development.
+	require("dotenv").config();
 }
-const { Client } = require("discord.js");
+
 // local modules
 const attachment_moderator = require("./moderators/attachment_moderator");
+const text_moderator = require('./moderators/text_moderator');
+
 // new Client instance
+const { Client } = require("discord.js");
 const client = new Client();
+
 // bot token from env variable
 const BOT_TOKEN = process.env.BOT_TOKEN;
 
 // load ml model
 attachment_moderator.load_model().then(() => {
-  client.login(BOT_TOKEN);
+	client.login(BOT_TOKEN);
 });
 
 // ready event
 client.on("ready", () => {
-  console.log(`${client.user.tag} Started`);
+	console.log(`${client.user.tag} Listening`);
 });
 
 // message event
 client.on("message", async (messageRef) => {
-  // ignore messages sent by a bot.
-  if (messageRef.author.bot) return;
+	// ignore messages sent by a bot.
+	if (messageRef.author.bot) return;
+	// COMMANDS ---
+	// Health Check Test
+	if (messageRef.content === "!status") {
+		messageRef.channel.send("Bot Status: HEALTHY");
+	}
 
-  // TODO: COMMANDS ---
-  // MODERATION---
-  // Attachment moderation
-  messageRef.attachments.forEach(async (attachment) => {
-    let prediction = await attachment_moderator.moderate(attachment);
+	delete_flag = false;
 
-    // DEBUG log
-    if (process.env.NODE_ENV !== "production") {
-      console.log(prediction);
-    }
-    const allowed_attributes = ["Neutral", "Drawing"];
-    // check if its inappropriate
-    if (!allowed_attributes.includes(prediction)) {
-      deleteMessage(messageRef);
-    }
-  });
+	// MODERATION---
+	// Attachment moderation
+	messageRef.attachments.forEach(async (attachment) => {
+		let prediction = await attachment_moderator.moderate(attachment);
+		
+		// DEBUG log
+		if (process.env.NODE_ENV !== "production") {
+			console.log("[INFO] ",prediction);
+		}
+		
+		// check if its inappropriate
+		if (prediction)
+		{
+			const allowed_attributes = ["Neutral", "Drawing"];
+			// check if its inappropriate
+			if (!allowed_attributes.includes(prediction)) {
+				delete_flag = true
+				deleteMessage(messageRef);
+			}
+		}
+	});
 
-  // TEST: set-up ---
-  // if (messageRef.content === "hello") {
-  //   response = "Hello";
-  // }
-});
+	// Text moderation
+	if (messageRef.content != "" && delete_flag==false)
+	{
+		text_moderator.moderate(messageRef.content)
+		.then(predictions => {
 
-// global message delete function
+			// DEBUG log
+			if (process.env.NODE_ENV !== "production") {
+				console.log("[INFO] ",predictions);
+			}
+
+			for(let category in predictions)
+			{
+				if(predictions[category]>0.7)
+				{
+					console.log("[Mod] Message was inappropriate")
+					deleteMessage(messageRef)
+					break
+				}
+			}
+		})
+		.catch(e => {
+			console.error(e.message)
+		})
+	}
+})
+
+// reply message
+// original message delete after 5 seconds
+// reply message modify 
 function deleteMessage(messageRef) {
-  messageRef
-    .reply("Inappropriate message, hence will be deleted after 5 seconds")
-    .then((responseRef) => {
-      messageRef
-        .delete({ timeout: 5000 })
-        .then(() => {
-          responseRef.edit("Inappropriate Message was deleted");
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    });
+	messageRef
+	  .reply("Inappropriate message, hence will be deleted after 5 seconds")
+	  .then((responseRef) => {
+		messageRef
+		  .delete({ timeout: 5000 })
+		  .then(() => {
+			responseRef.edit("Inappropriate message was deleted by MySafePlace Bot");
+		  })
+		  .catch((err) => {
+			console.error(err.message);
+		  });
+	});
 }
