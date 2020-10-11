@@ -29,19 +29,21 @@ client.on("ready", () => {
 client.on("message", async (messageRef) => {
 	// ignore messages sent by a bot.
 	if (messageRef.author.bot) return;
-	// COMMANDS ---
+  
+  // COMMANDS ---
 	// Health Check Test
 	if (messageRef.content === "!status") {
 		messageRef.channel.send("Bot Status: HEALTHY");
 	}
 
+  msg_scanned += 1
 	delete_flag = false;
 
 	// MODERATION---
 	// Attachment moderation
 	messageRef.attachments.forEach(async (attachment) => {
 		let prediction = await attachment_moderator.moderate(attachment);
-		
+    
 		// DEBUG log
 		if (process.env.NODE_ENV !== "production") {
 			console.log("[INFO] ",prediction);
@@ -53,7 +55,8 @@ client.on("message", async (messageRef) => {
 			const allowed_attributes = ["Neutral", "Drawing"];
 			// check if its inappropriate
 			if (!allowed_attributes.includes(prediction)) {
-				delete_flag = true
+        delete_flag = true
+        msg_deleted += 1
 				deleteMessage(messageRef);
 			}
 		}
@@ -74,7 +77,8 @@ client.on("message", async (messageRef) => {
 			{
 				if(predictions[category]>0.7)
 				{
-					console.log("[Mod] Message was inappropriate")
+          console.log("[Mod] Message was inappropriate")
+          msg_deleted += 1
 					deleteMessage(messageRef)
 					break
 				}
@@ -96,10 +100,23 @@ function deleteMessage(messageRef) {
 		messageRef
 		  .delete({ timeout: 5000 })
 		  .then(() => {
-			responseRef.edit("Inappropriate message was deleted by MySafePlace Bot");
+			responseRef.edit("_Inappropriate message deleted by MySafePlace Bot_");
 		  })
 		  .catch((err) => {
 			console.error(err.message);
 		  });
 	});
 }
+
+// stats variables
+let msg_scanned = 0
+let msg_deleted = 0
+
+function getStats(){
+	return {
+		'scanned': msg_scanned,
+		'deleted': msg_deleted,
+	}
+}
+
+module.exports = getStats
