@@ -29,7 +29,7 @@ client.on("ready", () => {
 client.on("message", async (messageRef) => {
 	// ignore messages sent by a bot.
 	if (messageRef.author.bot) return;
-
+	// COMMANDS ---
 	// Health Check Test
 	if (messageRef.content === "!status") {
 		messageRef.channel.send("Bot Status: HEALTHY");
@@ -37,9 +37,8 @@ client.on("message", async (messageRef) => {
 
 	delete_flag = false;
 
-	// TODO: COMMANDS ---
 	// MODERATION---
-	// attachment moderation
+	// Attachment moderation
 	messageRef.attachments.forEach(async (attachment) => {
 		let prediction = await attachment_moderator.moderate(attachment);
 		
