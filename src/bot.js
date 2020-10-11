@@ -33,19 +33,21 @@ client.on("ready", () => {
 client.on("message", async (messageRef) => {
 	// ignore messages sent by a bot.
 	if (messageRef.author.bot) return;
-	// COMMANDS ---
+  
+  // COMMANDS ---
 	// Health Check Test
 	if (messageRef.content === "!status") {
 		messageRef.channel.send("Bot Status: HEALTHY");
 	}
 
+  msg_scanned += 1
 	delete_flag = false;
 
 	// MODERATION---
 	// Attachment moderation
 	messageRef.attachments.forEach(async (attachment) => {
 		let prediction = await attachment_moderator.moderate(attachment);
-		
+    
 		// DEBUG log
 		if (process.env.NODE_ENV !== "production") {
 			console.log("[INFO] ",prediction);
@@ -94,6 +96,7 @@ client.on("message", async (messageRef) => {
 // original message delete after 5 seconds
 // reply message modify 
 function deleteMessage(messageRef) {
+  msg_deleted += 1
 	messageRef
 	  .reply("Inappropriate message, hence will be deleted after 5 seconds")
 	  .then((responseRef) => {
@@ -108,3 +111,12 @@ function deleteMessage(messageRef) {
 	});
 }
 
+
+function getStats(){
+	return {
+		'scanned': msg_scanned,
+		'deleted': msg_deleted,
+	}
+}
+
+module.exports = getStats
