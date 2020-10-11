@@ -16,6 +16,11 @@ attachment_moderator.load_model().then(() => {
   client.login(BOT_TOKEN);
 });
 
+// stats variables
+let msg_scanned = 0
+let msg_deleted = 0
+
+
 // ready event
 client.on("ready", () => {
   console.log(`${client.user.tag} Started`);
@@ -25,6 +30,8 @@ client.on("ready", () => {
 client.on("message", async (messageRef) => {
   // ignore messages sent by a bot.
   if (messageRef.author.bot) return;
+
+  msg_scanned += 1
 
   // TODO: COMMANDS ---
   // MODERATION---
@@ -43,14 +50,11 @@ client.on("message", async (messageRef) => {
     }
   });
 
-  // TEST: set-up ---
-  // if (messageRef.content === "hello") {
-  //   response = "Hello";
-  // }
 });
 
 // global message delete function
-function deleteMessage(messageRef) {
+function deleteMessage(messageRef) {	
+  msg_deleted += 1
   messageRef
     .reply("Inappropriate message, hence will be deleted after 5 seconds")
     .then((responseRef) => {
@@ -64,3 +68,12 @@ function deleteMessage(messageRef) {
         });
     });
 }
+
+function getStats(){
+	return {
+		'scanned': msg_scanned,
+		'deleted': msg_deleted,
+	}
+}
+
+module.exports = getStats
