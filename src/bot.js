@@ -20,10 +20,6 @@ attachment_moderator.load_model().then(() => {
 	client.login(BOT_TOKEN);
 });
 
-// stats variables
-let msg_scanned = 0
-let msg_deleted = 0
-
 // ready event
 client.on("ready", () => {
 	console.log(`${client.user.tag} Listening`);
@@ -59,7 +55,8 @@ client.on("message", async (messageRef) => {
 			const allowed_attributes = ["Neutral", "Drawing"];
 			// check if its inappropriate
 			if (!allowed_attributes.includes(prediction)) {
-				delete_flag = true
+        delete_flag = true
+        msg_deleted += 1
 				deleteMessage(messageRef);
 			}
 		}
@@ -80,7 +77,8 @@ client.on("message", async (messageRef) => {
 			{
 				if(predictions[category]>0.7)
 				{
-					console.log("[Mod] Message was inappropriate")
+          console.log("[Mod] Message was inappropriate")
+          msg_deleted += 1
 					deleteMessage(messageRef)
 					break
 				}
@@ -96,14 +94,13 @@ client.on("message", async (messageRef) => {
 // original message delete after 5 seconds
 // reply message modify 
 function deleteMessage(messageRef) {
-  msg_deleted += 1
 	messageRef
 	  .reply("Inappropriate message, hence will be deleted after 5 seconds")
 	  .then((responseRef) => {
 		messageRef
 		  .delete({ timeout: 5000 })
 		  .then(() => {
-			responseRef.edit("Inappropriate message was deleted by MySafePlace Bot");
+			responseRef.edit("_Inappropriate message deleted by MySafePlace Bot_");
 		  })
 		  .catch((err) => {
 			console.error(err.message);
@@ -111,6 +108,9 @@ function deleteMessage(messageRef) {
 	});
 }
 
+// stats variables
+let msg_scanned = 0
+let msg_deleted = 0
 
 function getStats(){
 	return {
