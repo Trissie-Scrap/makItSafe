@@ -27,8 +27,17 @@ client.on("message", (message) => {
     console.log(predicted_value)
       if(predicted_value['threat']>0.8){
         console.log("Message was inappropriate, hence deleted")
-        message.reply("threat message, hence deleting in 5 seconds")
-        message.delete({timeout:5000})
+        message.reply("Inappropriate, hence will be deleted after 5 seconds")
+        .then(m=>{
+          message.delete({timeout:5000})
+          .then(()=>{
+            m.edit("Inappropriate Messaged was deleted")
+          })
+          .catch(e=>{
+            console.error(e)
+          })
+        })
+       
        
       }
       // if(predicted_value['unsubstantial']>0.8){
@@ -38,29 +47,65 @@ client.on("message", (message) => {
       // }
       if(predicted_value['spam']>0.8){
         console.log("Message was inappropriate, hence deleted")
-        message.reply("spam message,  hence deleting in 5 seconds")
-        message.delete({timeout:5000})
+        message.reply("Inappropriate, hence will be deleted after 5 seconds")
+        .then(m=>{
+          message.delete({timeout:5000})
+          .then(()=>{
+            m.edit("Inappropriate Messaged was deleted")
+          })
+          .catch(e=>{
+            console.error(e)
+          })
+        })
+      
       }
        if(predicted_value['insult']>0.8){
         console.log("Message was inappropriate, hence deleted")
-        message.reply("insulting message,  hence deleting in 5 seconds")
-        message.delete({timeout:5000})
+        message.reply("Inappropriate, hence will be deleted after 5 seconds")
+        .then(m=>{
+          message.delete({timeout:5000})
+          .then(()=>{
+            m.edit("Inappropriate Messaged was deleted")
+          })
+          .catch(e=>{
+            console.error(e)
+          })
+        })
+        
       }
       if(predicted_value['profanity']>0.8){
         console.log("Message was inappropriate, hence deleted")
-        message.reply("profanity message,  hence deleting in 5 seconds")
-        message.delete({timeout:5000})
+        message.reply("Inappropriate, hence will be deleted after 5 seconds")
+        .then(m=>{
+          message.delete({timeout:5000})
+          .then(()=>{
+            m.edit("Inappropriate Messaged was deleted")
+          })
+          .catch(e=>{
+            console.error(e)
+          })
+        })
+        
       }
       if(predicted_value['sexually_explicit']>0.8){
         console.log("Message was inappropriate, hence deleted")
-        message.reply("sexually_explicit message, hence deleting in 5 seconds")
-        message.delete({timeout:5000}).then((msg)=>msg.edit("This Message was Deleted "))
+        message.reply("Inappropriate, hence will be deleted after 5 seconds")
+        .then(m=>{
+          message.delete({timeout:5000})
+          .then(()=>{
+            m.edit("Inappropriate Messaged was deleted")
+          })
+          .catch(e=>{
+            console.error(e)
+          })
+        })
+
       }
   })
   .catch(err=>{
-    console.error(err.message);
+    console.error(err);
   })  
-  
+
 });
 
 client.login(BOT_TOKEN);
