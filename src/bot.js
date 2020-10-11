@@ -22,12 +22,18 @@ client.on("message", (message) => {
     message.channel.send("BOT STATUS: HEALTHY");
   }
 
-  sentiment_message(message.content).then((predicted_value)=>{
+  sentiment_message(message.content)
+  .then((predicted_value)=>{
       if(predicted_value['threat']>0.8){
-        console.log("Message was inappropriate")
-        message.reply("Inappropriate")
+        console.log("Message was inappropriate, hence deleted")
+        message.reply("Inappropriate, hence deleted")
+        message.delete()
       }
   })
+  .catch(err=>{
+    console.error(err.message);
+  })  
+  
 });
 
 client.login(BOT_TOKEN);
