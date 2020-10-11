@@ -20,6 +20,10 @@ attachment_moderator.load_model().then(() => {
 	client.login(BOT_TOKEN);
 });
 
+// stats variables
+let msg_scanned = 0
+let msg_deleted = 0
+
 // ready event
 client.on("ready", () => {
 	console.log(`${client.user.tag} Listening`);
@@ -103,3 +107,4 @@ function deleteMessage(messageRef) {
 		  });
 	});
 }
+
