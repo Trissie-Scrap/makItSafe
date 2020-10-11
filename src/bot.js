@@ -24,10 +24,37 @@ client.on("message", (message) => {
 
   sentiment_message(message.content)
   .then((predicted_value)=>{
+    console.log(predicted_value)
       if(predicted_value['threat']>0.8){
         console.log("Message was inappropriate, hence deleted")
-        message.reply("Inappropriate, hence deleted")
-        message.delete()
+        message.reply("threat message, hence deleting in 5 seconds")
+        message.delete({timeout:5000})
+       
+      }
+      // if(predicted_value['unsubstantial']>0.8){
+      //   console.log("Message was inappropriate, hence deleted")
+      //   message.reply("unsubstantial message, hence deleted")
+      //   message.delete()
+      // }
+      if(predicted_value['spam']>0.8){
+        console.log("Message was inappropriate, hence deleted")
+        message.reply("spam message,  hence deleting in 5 seconds")
+        message.delete({timeout:5000})
+      }
+       if(predicted_value['insult']>0.8){
+        console.log("Message was inappropriate, hence deleted")
+        message.reply("insulting message,  hence deleting in 5 seconds")
+        message.delete({timeout:5000})
+      }
+      if(predicted_value['profanity']>0.8){
+        console.log("Message was inappropriate, hence deleted")
+        message.reply("profanity message,  hence deleting in 5 seconds")
+        message.delete({timeout:5000})
+      }
+      if(predicted_value['sexually_explicit']>0.8){
+        console.log("Message was inappropriate, hence deleted")
+        message.reply("sexually_explicit message, hence deleting in 5 seconds")
+        message.delete({timeout:5000}).then((msg)=>msg.edit("This Message was Deleted "))
       }
   })
   .catch(err=>{
