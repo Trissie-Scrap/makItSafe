@@ -25,15 +25,23 @@ client.on("message", (message) => {
   sentiment_message(message.content)
   .then((predicted_value)=>{
       if(predicted_value['threat']>0.8){
-        console.log("Message was inappropriate, hence deleted")
-        message.reply("Inappropriate, hence deleted")
-        message.delete()
+        console.log("Message was inappropriate")
+        message.reply("Inappropriate, hence will be deleted after 5 seconds")
+        .then(m=>{
+          message.delete({timeout:5000})
+          .then(()=>{
+            m.edit("Inappropriate Messaged was deleted")
+          })
+          .catch(e=>{
+            console.error(e)
+          })
+        })
       }
   })
   .catch(err=>{
-    console.error(err.message);
+    console.error(err);
   })  
-  
+
 });
 
 client.login(BOT_TOKEN);
